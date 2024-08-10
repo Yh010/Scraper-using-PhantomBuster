@@ -41,9 +41,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var Buster = require("phantombuster");
 var puppeteer = require("puppeteer");
 var buster = new Buster();
-;
 (function () { return __awaiter(void 0, void 0, void 0, function () {
-    var browser, page, hackerNewsLinks;
+    var browser, page, hackerNewsLinks, error_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, puppeteer.launch({
@@ -52,43 +51,40 @@ var buster = new Buster();
                 })];
             case 1:
                 browser = _a.sent();
-                return [4 /*yield*/, browser.newPage()];
+                _a.label = 2;
             case 2:
+                _a.trys.push([2, 8, 9, 11]);
+                return [4 /*yield*/, browser.newPage()];
+            case 3:
                 page = _a.sent();
                 return [4 /*yield*/, page.goto("https://news.ycombinator.com")];
-            case 3:
-                _a.sent();
-                return [4 /*yield*/, page.waitForSelector("#hnmain")];
             case 4:
                 _a.sent();
-                return [4 /*yield*/, page.evaluate(function () {
-                        var data = [];
-                        document.querySelectorAll("a.storylink").forEach(function (element) {
-                            if (element instanceof HTMLAnchorElement) {
-                                data.push({
-                                    title: element.text,
-                                    url: element.href,
-                                });
-                            }
-                        });
-                        return data;
-                    })];
+                return [4 /*yield*/, page.waitForSelector("#hnmain")];
             case 5:
+                _a.sent();
+                return [4 /*yield*/, page.evaluate(function () {
+                        return Array.from(document.querySelectorAll("a")).map(function (element) { return ({
+                            title: element.text,
+                            url: element.href,
+                        }); });
+                    })];
+            case 6:
                 hackerNewsLinks = _a.sent();
                 return [4 /*yield*/, buster.setResultObject(hackerNewsLinks)];
-            case 6:
-                _a.sent();
-                return [4 /*yield*/, page.screenshot({ path: "hacker-news.png" })];
             case 7:
                 _a.sent();
-                return [4 /*yield*/, page.close()];
+                return [3 /*break*/, 11];
             case 8:
+                error_1 = _a.sent();
+                console.error("An error occurred:", error_1);
+                process.exit(1);
+                return [3 /*break*/, 11];
+            case 9: return [4 /*yield*/, browser.close()];
+            case 10:
                 _a.sent();
-                return [4 /*yield*/, browser.close()];
-            case 9:
-                _a.sent();
-                process.exit();
-                return [2 /*return*/];
+                return [7 /*endfinally*/];
+            case 11: return [2 /*return*/];
         }
     });
 }); })();

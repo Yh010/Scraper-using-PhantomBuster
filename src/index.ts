@@ -5,12 +5,12 @@
 const Buster = require("phantombuster")
 const puppeteer = require("puppeteer")
 
-const buster = new Buster()
-
 interface IHackerNewsLink {
 	title: string
 	url: string
 }
+
+const buster = new Buster()
 
 ;(async () => {
 	const browser = await puppeteer.launch({
@@ -18,27 +18,23 @@ interface IHackerNewsLink {
 		args: ["--no-sandbox"]
 	})
 	
-	const page = await browser.newPage()
-	await page.goto("https://news.ycombinator.com")
-	await page.waitForSelector("#hnmain")
+	 try {
+        const page = await browser.newPage()
+        await page.goto("https://news.ycombinator.com")
+        await page.waitForSelector("#hnmain")
 
-	const hackerNewsLinks = await page.evaluate(() => {
-		const data: IHackerNewsLink[] = []
-		document.querySelectorAll("a.storylink").forEach((element) => {
-            if (element instanceof HTMLAnchorElement) {
-                data.push({
-                    title: element.text,
-                    url: element.href,
-            })
-	    }
-})
-		return data
-	})
+        const hackerNewsLinks: IHackerNewsLink[] = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll("a")).map(element => ({
+                title: element.text,
+                url: element.href,
+            }))
+        })
 
-	await buster.setResultObject(hackerNewsLinks)
-	await page.screenshot({ path: "hacker-news.png" })
-
-	await page.close()
-	await browser.close()
-	process.exit()
+        await buster.setResultObject(hackerNewsLinks)
+    } catch (error) {
+        console.error("An error occurred:", error)
+        process.exit(1)
+    } finally {
+        await browser.close()
+    }
 })()
